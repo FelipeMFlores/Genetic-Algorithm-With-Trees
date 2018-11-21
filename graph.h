@@ -8,7 +8,7 @@
 
 class Graph
 {
-private:
+protected:
     std::list<int> R;
     std::map<int,std::list < std::pair <int, int> > > G;
     
@@ -19,4 +19,6 @@ public:
     int id;
     void InputGraph();
     void PrintGraph ();
+    std::list<int> GetR(){return R;}
+    std::map<int,std::list < std::pair <int, int> > >  GetG(){return G;}
 };
