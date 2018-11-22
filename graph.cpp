@@ -1,11 +1,12 @@
 #include "graph.h"
 
+Graph::Graph(){}
 
-
-Graph::Graph(int id)
+Graph::Graph (int id)
 { 
     this->id = id;
 }
+
 
 Graph::~Graph()
 {
@@ -33,11 +34,13 @@ void Graph::InputGraph()
     std::getline(std::cin, strR);
     std::istringstream is( strR );
     int n;
-    int b = 0;
+  
+    
     while( is >> n ) {
         R.push_back(n);
-        b++;
+        
     }
+    r = R.front();
     R.sort(); 
     int v1,v2,w;
     std::map<int,std::list < std::pair <int, int> > >::iterator it;
@@ -54,6 +57,21 @@ void Graph::InputGraph()
             G[v1] = novo; 
         }
     }
+
+}
+
+
+int Graph::GetNumberOfEdges()
+{
+    int i = 0;
+    for( auto const& x : G )
+    {
+            
+        for( auto const& j : x.second )
+            i++;
+    }
+
+    return i;
 
 }
 
