@@ -8,18 +8,24 @@ int main (int argc, char** argv)
     firstgraph.InputGraph();
     //firstgraph.PrintGraph();
     std::cout << std::endl << std::endl << std::endl << std::endl;
-    Tree firstTree(1 , firstgraph.GetR(), firstgraph.GetG(), firstgraph.Getr());
+    
     std::vector<float> keys;
-    int nedges = firstTree.GetNumberOfEdges(); 
+    int nedges = firstgraph.GetNumberOfEdges(); 
     keys.resize(nedges);
     
-    std::generate (keys.begin(), keys.end(), Randomkey);
-
 
     
-    firstTree.ConstructTree(keys);
+        std::cout << i << std::endl;
+        std::generate (keys.begin(), keys.end(), Randomkey);
 
-
+    
+        Tree firstTree(i , firstgraph.GetR(), firstgraph.GetG(), firstgraph.Getr(),firstgraph.GetNVertices());
+        firstTree.ConstructTree(keys);
+    
+    //firstTree.PrintTree();
+    
+    //std::cout << "Graph: " << firstgraph.GetNumberOfEdges() << std::endl;
+    //std::cout << "Tree: " << firstTree.GetNumberOfEdgesT() << std::endl;
 
     return 0;
 }

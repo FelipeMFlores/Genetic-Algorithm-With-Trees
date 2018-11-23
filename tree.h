@@ -16,15 +16,22 @@ class Tree: public Graph
 private:
     std::map<int,std::list < std::pair <int, int> > > T;
     std::list <int> verticesIn;
-    std::list <bool> RIns;
+    std::vector<int> link;
+  
 
 public:
     
-    Tree(int id, std::list<int> R,std::map<int, std::list < std::pair <int, int> > > G,int r);
+    Tree(int id, std::list<int> R,std::map<int, std::list < std::pair <int, int> > > G,int r, int nvertices);
     ~Tree();
     int id;
+    void PrintTree();
     void ConstructTree(std::vector<float> keys);
-    bool PutEdgeUntilR( EDGE edge );
+    void PutEdge( EDGE edge );
     bool InT(int v);
-    bool AllRIn();
+   
+    int GetNumberOfEdgesT();
+    int find(int x);
+    bool same(int a, int b) {
+        return find(a) == find(b);}
+    void unite(int a, int b);
 };

@@ -5,6 +5,7 @@ Graph::Graph(){}
 Graph::Graph (int id)
 { 
     this->id = id;
+    nvertices = 0;
 }
 
 
@@ -15,7 +16,7 @@ Graph::~Graph()
 
 void Graph::PrintGraph ()
 {
-    int key;
+    
     std::list < std::pair <int, int> > val;
     for( auto const& x : G )
     {
@@ -46,7 +47,12 @@ void Graph::InputGraph()
     std::map<int,std::list < std::pair <int, int> > >::iterator it;
     while(std::cin >> v1 >> v2 >> w)
     {
-        
+        if(v1 > nvertices)
+            nvertices = v1;
+        if(v2 > nvertices)
+            nvertices = v2;
+
+
         it = G.find(v1);
         if (it != G.end())
             G[v1].push_back(std::make_pair(v2,w));
@@ -66,9 +72,7 @@ int Graph::GetNumberOfEdges()
     int i = 0;
     for( auto const& x : G )
     {
-            
-        for( auto const& j : x.second )
-            i++;
+        i+= x.second.size();
     }
 
     return i;

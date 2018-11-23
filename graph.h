@@ -13,7 +13,7 @@ protected:
     int r;
     std::list<int> R;
     std::map<int,std::list < std::pair <int, int> > > G;
-    
+    int nvertices;
 
 public:
     Graph();
@@ -26,4 +26,5 @@ public:
     std::list<int> GetR(){return R;}
     std::map<int,std::list < std::pair <int, int> > >  GetG(){return G;}
     int Getr(){return r;}
+    int GetNVertices(){return nvertices;}
 };
