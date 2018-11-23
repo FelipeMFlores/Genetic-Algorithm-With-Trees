@@ -17,6 +17,7 @@ private:
     std::map<int,std::list < std::pair <int, int> > > T;
     std::list <int> verticesIn;
     std::vector<int> link;
+    std::vector<bool> Rvector;
   
 
 public:
@@ -34,4 +35,6 @@ public:
     bool same(int a, int b) {
         return find(a) == find(b);}
     void unite(int a, int b);
+    bool Prune(int v);
+    int GetWeight();
 };

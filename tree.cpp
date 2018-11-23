@@ -5,10 +5,13 @@
 Tree::Tree(int id, std::list<int> R, std::map<int,std::list < std::pair <int, int> > > G, int r, int nvertices){
 
     this->id = id;
-    this->R = R;
     this->G = G;
     this->r = r;
     this->nvertices = nvertices;
+    Rvector.resize(nvertices, false);
+    for(int x: R){
+        Rvector[x] = true;
+    }
 }
 
 Tree::~Tree()
@@ -140,7 +143,47 @@ int Tree::find(int x){
 void Tree::unite(int a, int b){
     a = find(a);
     b = find(b);
-
     link[b] = a;
+}
 
+
+bool Tree::Prune(int v){
+
+    bool noR = false;
+    bool branch;
+    bool exists = true;
+    try
+    {
+        T.at(v);
+    }
+    catch(const std::exception& e)
+    {
+        exists = false;
+    }
+    if(exists){
+    
+    for(std::pair<int,int> x: T.at(v))
+    {
+        std::cout << v << " : " << x.first << std::endl;
+        branch = Prune(x.first);
+        if(!branch){
+            T[v].remove(x);
+        }
+        noR = (noR || branch);
+    }
+    }
+    return (noR || Rvector[v]);
+        
+}
+
+int Tree::GetWeight(){
+    int w = 0;
+
+    for(auto const& x : T){
+        for(auto const& j : x.second){
+        w += j.second;
+        
+        }
+    }
+    return w;
 }

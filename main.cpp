@@ -15,14 +15,19 @@ int main (int argc, char** argv)
     
 
     
-        std::cout << i << std::endl;
-        std::generate (keys.begin(), keys.end(), Randomkey);
+     
+    std::generate (keys.begin(), keys.end(), Randomkey);
 
     
-        Tree firstTree(i , firstgraph.GetR(), firstgraph.GetG(), firstgraph.Getr(),firstgraph.GetNVertices());
-        firstTree.ConstructTree(keys);
+    Tree firstTree(1 , firstgraph.GetR(), firstgraph.GetG(), firstgraph.Getr(),firstgraph.GetNVertices());
+    firstTree.ConstructTree(keys);
+firstTree.PrintTree();
+    std::cout << std::endl << std::endl;
+    std::cout << "Antes: " << firstTree.GetWeight() << std::endl;
+    firstTree.Prune(firstgraph.Getr());
+    std::cout << "Depois: " << firstTree.GetWeight() << std::endl;
+
     
-    //firstTree.PrintTree();
     
     //std::cout << "Graph: " << firstgraph.GetNumberOfEdges() << std::endl;
     //std::cout << "Tree: " << firstTree.GetNumberOfEdgesT() << std::endl;
