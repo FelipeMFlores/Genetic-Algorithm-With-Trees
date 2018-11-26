@@ -5,10 +5,11 @@
 #include "graph.h"
 #include <vector>
 
+
 struct EDGE{
     int v1;
     int v2;
-    float w;
+    int w;
 };
 
 class Tree: public Graph

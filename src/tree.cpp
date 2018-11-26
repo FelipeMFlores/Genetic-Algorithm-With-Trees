@@ -1,4 +1,4 @@
-#include "tree.h"
+#include "../include/tree.h"
 
 
 
@@ -8,7 +8,7 @@ Tree::Tree(int id, std::list<int> R, std::map<int,std::list < std::pair <int, in
     this->G = G;
     this->r = r;
     this->nvertices = nvertices;
-    Rvector.resize(nvertices, false);
+    Rvector.resize(nvertices+1, false);
     for(int x: R){
         Rvector[x] = true;
     }
@@ -59,16 +59,14 @@ void Tree::ConstructTree(std::vector<float> keys)
     
     edgekey.sort(sortbykey);
     
-    link.resize(nvertices);
+    link.resize(nvertices+1);
    
     for (int i = 1; i <= nvertices; i++) link[i] = i;
     
-
-
     for( auto const& x: edgekey)
-    {
+    {   
         PutEdge(x.second);
-
+        
     }
 
 
@@ -82,28 +80,25 @@ void Tree::PutEdge( EDGE edge )
     if(edge.v2 == r) return; //points to root.
 
     if(InT(edge.v2)) return; //points to a vertice in the tree. CICLE
-
     
     if (same(edge.v1,edge.v2)) return;
-    
     unite(edge.v1,edge.v2);
-
- 
 
     std::map<int,std::list < std::pair <int, int> > >::iterator it;
     it = T.find(edge.v1);
     if (it != T.end())
-        T[edge.v1].push_back(std::make_pair(edge.v2,edge.w));
+        {
+            T[edge.v1].push_back(std::make_pair(edge.v2,edge.w));
+        }
     else 
     {
-        std::list < std::pair <int, int> > novo;
-        novo.push_back(std::make_pair(edge.v2,edge.w));
-        T[edge.v1] = novo; 
+        T[edge.v1]  = {std::make_pair(edge.v2,edge.w)};;  
+        
     }
 
     verticesIn.push_back(edge.v2);
     verticesIn.sort();
-
+  
 
 }
 

@@ -4,7 +4,8 @@
 #include <string>
 #include <algorithm>
 #include <map>
-
+#include <string>
+#include <fstream>
 
 
 class Graph
@@ -20,7 +21,7 @@ public:
     Graph(int id);
     ~Graph();
     int id;
-    void InputGraph();
+    void InputGraph(std::string inputFile);
     void PrintGraph ();
     int GetNumberOfEdges();
     std::list<int> GetR(){return R;}
