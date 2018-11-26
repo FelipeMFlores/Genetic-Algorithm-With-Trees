@@ -1,5 +1,5 @@
 # Genetic-Algorithm-for-Tree-of-lower-value
-A Genetic Algorithm for finding a directed tree of lower value.
+A Genetic Algorithm for finding a directed tree (with a set o vertices included) of lower weight.
 
 
 Trabalho de Otimização Combinatória - 2018/2 - UFRGS
