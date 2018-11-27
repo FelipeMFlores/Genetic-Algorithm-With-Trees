@@ -2,12 +2,13 @@
 
 
 
-Tree::Tree(int id, std::list<int> R, std::map<int,std::list < std::pair <int, int> > > G, int r, int nvertices){
+Tree::Tree(int id, std::list<int> R, std::map<int,std::list < std::pair <int, int> > > G, int r, int nvertices,std::map<int,int > SizeReference){
 
     this->id = id;
     this->G = G;
     this->r = r;
     this->nvertices = nvertices;
+    this->SizeReference = SizeReference;
     Rvector.resize(nvertices+1, false);
     for(int x: R){
         Rvector[x] = true;
@@ -36,70 +37,90 @@ bool sortbykey(std::pair<float,EDGE> a, std::pair<float,EDGE> b){
     return (a.first < b.first); 
 }
 
-void Tree::ConstructTree(std::vector<float> keys)
+void Tree::ConstructTree(std::vector<bool> keys)
 {
-    int i = 0;
-    std::list< std::pair < float, EDGE > > edgekey;
+    this->keys = keys;
 
-    EDGE edge;
-    
-    for( auto const& x : G )
-    {       
-        for( auto const& j : x.second )
-        {       
-            edge.v1 = x.first;
-            edge.v2 = j.first;
-            edge.w = j.second;
-            
-            edgekey.push_back(std::make_pair(keys[i],edge));
-            
-            i++;
-        }
-    }
-    
-    edgekey.sort(sortbykey);
-    
-    link.resize(nvertices+1);
+    //insert the vertices like a Breadth-first search
+    std::list<int> larg;
+    int vertice1;
+
    
-    for (int i = 1; i <= nvertices; i++) link[i] = i;
-    
-    for( auto const& x: edgekey)
-    {   
-        PutEdge(x.second);
-        
+    larg.push_back(r);  
+
+    while(!larg.empty()){
+        vertice1=larg.front();
+        int i = Translate(vertice1);
+        if(i != -1){
+            std::list< std::pair < int,int> > edges = ShuffleList(G[vertice1]);
+            for(auto const& x : edges){
+                if(keys[i++]){
+                    if(PutEdge(vertice1,x.first,x.second)){
+                        larg.push_back(x.first);
+                    }
+                }
+
+            }
+        }
+        larg.pop_front();
+
     }
 
 
 }
 
+std::list< std::pair < int,int> > Tree::ShuffleList(std::list< std::pair < int,int> > lst){
+    // create a vector of (wrapped) references to elements in the list
+    // http://en.cppreference.com/w/cpp/utility/functional/reference_wrapper
+
+    std::vector< std::pair < int,int>  > vec( lst.begin(), lst.end() ) ;
+
+    // shuffle (the references in) the vector
+    std::shuffle( vec.begin(), vec.end(), std::mt19937{ std::random_device{}() } ) ;
+
+    // copy the shuffled sequence into a new list
+    std::list<std::pair < int,int>> shuffled_list {  vec.begin(), vec.end() } ;
+
+    return shuffled_list;
+}
+
+int Tree::Translate(int v){
+    int i = 0;
+    for(auto const& x : SizeReference){
+        if(x.first == v)
+            return i;
+        else
+            i+= x.second;
+
+    }
+    return -1;
+}
 
 
-
-void Tree::PutEdge( EDGE edge )
+bool Tree::PutEdge( int v1, int v2 , int w)
 {
-    if(edge.v2 == r) return; //points to root.
+    if(v2 == r) return false; //points to root.
 
-    if(InT(edge.v2)) return; //points to a vertice in the tree. CICLE
+    if(InT(v2)) return false; //points to a vertice in the tree. CICLE
     
-    if (same(edge.v1,edge.v2)) return;
-    unite(edge.v1,edge.v2);
+    
 
     std::map<int,std::list < std::pair <int, int> > >::iterator it;
-    it = T.find(edge.v1);
+    it = T.find(v1);
     if (it != T.end())
         {
-            T[edge.v1].push_back(std::make_pair(edge.v2,edge.w));
+            T[v1].push_back(std::make_pair(v2,w));
         }
     else 
     {
-        T[edge.v1]  = {std::make_pair(edge.v2,edge.w)};;  
+        T[v1]  = {std::make_pair(v2,w)};;  
         
     }
 
-    verticesIn.push_back(edge.v2);
+    verticesIn.push_back(v2);
     verticesIn.sort();
   
-
+    return true;
 }
 
 bool Tree::InT(int v){
@@ -129,46 +150,40 @@ int Tree::GetNumberOfEdgesT(){
 
 }
 
-int Tree::find(int x){
-    while (x != link[x]) x = link[x];
-    return x;
 
-}
-
-void Tree::unite(int a, int b){
-    a = find(a);
-    b = find(b);
-    link[b] = a;
-}
+void Tree::Prune(){
 
 
-bool Tree::Prune(int v){
+    TCopy = T;
+    T.clear();
+    PruneRec(r);
 
-    bool noR = false;
-    bool branch;
-    bool exists = true;
-    try
-    {
-        T.at(v);
-    }
-    catch(const std::exception& e)
-    {
-        exists = false;
-    }
-    if(exists){
-    
-    for(std::pair<int,int> x: T.at(v))
-    {
-        std::cout << v << " : " << x.first << std::endl;
-        branch = Prune(x.first);
-        if(!branch){
-            T[v].remove(x);
-        }
-        noR = (noR || branch);
-    }
-    }
-    return (noR || Rvector[v]);
         
+}
+
+void Tree::PruneRec(int v) {
+
+
+        bool exists = true;
+        try
+        {
+            TCopy.at(v);
+        }
+        catch(const std::exception& e)
+        {
+            exists = false;
+        }
+        if(exists){
+        
+        for(std::pair<int,int> x: TCopy.at(v))
+        {
+            T[v].push_back(x);
+            PruneRec(x.first);
+        
+        }
+        }
+
+
 }
 
 int Tree::GetWeight(){
@@ -181,4 +196,18 @@ int Tree::GetWeight(){
         }
     }
     return w;
+}
+
+
+int Tree::GetNumbersOfRsIn(){
+
+    int i = 1;
+    for( auto const& x : T )
+    {
+        if(Rvector[x.first])
+            i++;
+    }
+
+    return i;
+
 }

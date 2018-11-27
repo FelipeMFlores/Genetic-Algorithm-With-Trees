@@ -74,9 +74,27 @@ void Graph::InputGraph(std::string inputFile)
         }
     myfile.close();
     }
+    createReference();
 
 }
 
+void Graph::createReference(){
+
+    for(auto const& x : G){
+        SizeReference[x.first] = x.second.size();
+    }
+
+}
+void Graph::PrintReference(){
+        
+    
+    for( auto const& x :  SizeReference)
+    {
+        std::cout << x.first  << " : " << x.second << std::endl;
+    }
+
+
+}
 
 int Graph::GetNumberOfEdges()
 {

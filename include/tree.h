@@ -4,6 +4,8 @@
 #include <map>
 #include "graph.h"
 #include <vector>
+#include <random>
+
 
 
 struct EDGE{
@@ -16,26 +18,28 @@ class Tree: public Graph
 {
 private:
     std::map<int,std::list < std::pair <int, int> > > T;
+    std::map<int,std::list < std::pair <int, int> > > TCopy;
     std::list <int> verticesIn;
-    std::vector<int> link;
+    std::vector<bool> keys;
+    void PruneRec(int v);
+    int Translate(int v);
     std::vector<bool> Rvector;
+     bool PutEdge(  int v1, int v2 , int w );
+    std::list< std::pair < int,int> > ShuffleList(std::list< std::pair < int,int> > lst);
   
 
 public:
     
-    Tree(int id, std::list<int> R,std::map<int, std::list < std::pair <int, int> > > G,int r, int nvertices);
+    Tree(int id, std::list<int> R,std::map<int, std::list < std::pair <int, int> > > G,int r, int nvertices,std::map<int,int > SizeReference);
     ~Tree();
     int id;
     void PrintTree();
-    void ConstructTree(std::vector<float> keys);
-    void PutEdge( EDGE edge );
-    bool InT(int v);
+    void ConstructTree(std::vector<bool> keys);
    
+    
+    bool InT(int v);
+    int GetNumbersOfRsIn();
     int GetNumberOfEdgesT();
-    int find(int x);
-    bool same(int a, int b) {
-        return find(a) == find(b);}
-    void unite(int a, int b);
-    bool Prune(int v);
+    void Prune();
     int GetWeight();
 };
