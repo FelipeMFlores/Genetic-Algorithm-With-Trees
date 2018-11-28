@@ -22,6 +22,7 @@ public:
     Graph(int id);
     ~Graph();
     int id;
+
     void InputGraph(std::string inputFile);
     void PrintGraph ();
     void PrintReference();
@@ -29,6 +30,7 @@ public:
     std::list<int> GetR(){return R;}
     std::map<int,std::list < std::pair <int, int> > >  GetG(){return G;}
     int Getr(){return r;}
+    
     int GetNVertices(){return nvertices;}
     std::map<int,int > GetSizeReference(){return SizeReference;}
 

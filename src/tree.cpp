@@ -1,14 +1,16 @@
 #include "../include/tree.h"
 
 
+Tree::Tree(){};
 
-Tree::Tree(int id, std::list<int> R, std::map<int,std::list < std::pair <int, int> > > G, int r, int nvertices,std::map<int,int > SizeReference){
+Tree::Tree(int id, Graph graph){
 
     this->id = id;
-    this->G = G;
-    this->r = r;
-    this->nvertices = nvertices;
-    this->SizeReference = SizeReference;
+    this->G = graph.GetG();
+    this->r = graph.Getr();
+    this->R = graph.GetR();
+    this->nvertices = graph.GetNVertices();
+    this->SizeReference = graph.GetSizeReference();
     Rvector.resize(nvertices+1, false);
     for(int x: R){
         Rvector[x] = true;
@@ -33,9 +35,7 @@ void Tree::PrintTree(){
 
 }
 
-bool sortbykey(std::pair<float,EDGE> a, std::pair<float,EDGE> b){ 
-    return (a.first < b.first); 
-}
+
 
 void Tree::ConstructTree(std::vector<bool> keys)
 {
@@ -49,15 +49,17 @@ void Tree::ConstructTree(std::vector<bool> keys)
     larg.push_back(r);  
 
     while(!larg.empty()){
-        vertice1=larg.front();
+        vertice1 = larg.front();
         int i = Translate(vertice1);
         if(i != -1){
             std::list< std::pair < int,int> > edges = ShuffleList(G[vertice1]);
             for(auto const& x : edges){
                 if(keys[i++]){
-                    if(PutEdge(vertice1,x.first,x.second)){
+                    if(PutEdge(vertice1,x.first,x.second))
                         larg.push_back(x.first);
-                    }
+                    else
+                        this->keys[i-1] = false;
+                    
                 }
 
             }
@@ -66,7 +68,7 @@ void Tree::ConstructTree(std::vector<bool> keys)
 
     }
 
-
+    
 }
 
 std::list< std::pair < int,int> > Tree::ShuffleList(std::list< std::pair < int,int> > lst){
@@ -204,10 +206,47 @@ int Tree::GetNumbersOfRsIn(){
     int i = 1;
     for( auto const& x : T )
     {
-        if(Rvector[x.first])
-            i++;
+        for( auto const& j : x.second )
+        {
+            if(Rvector[j.first])
+                i++;
+        }
     }
 
     return i;
 
+}
+
+void Tree::CalculateFitness(){
+    int fit = GetWeight();
+    fit += (R.size() - GetNumbersOfRsIn())*1000;
+
+    fitness = fit;
+
+}
+
+void Tree::ConstructDeep(std::vector<bool> keys){
+
+    this->keys = keys;
+    DeepRec(r);
+
+}
+
+
+void Tree::DeepRec(int v) {
+
+
+    int i = Translate(v);
+    if(i != -1){
+        std::list< std::pair < int,int> > edges = ShuffleList(G[v]);        
+        for(auto const& x : edges){
+            if(keys[i++]){
+                if(PutEdge(v,x.first,x.second))
+                    DeepRec(x.first);
+                else
+                    this->keys[i-1] = false;
+                    
+            }
+        }
+    }
 }
