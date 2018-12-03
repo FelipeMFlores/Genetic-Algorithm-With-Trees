@@ -8,25 +8,18 @@
 
 
 
-struct EDGE{
-    int v1;
-    int v2;
-    int w;
-};
-
 class Tree: public Graph
 {
 private:
-    std::map<int,std::list < std::pair <int, int> > > T;
-    std::map<int,std::list < std::pair <int, int> > > TCopy;
-    std::list <int> verticesIn;
-    std::vector<bool> keys;
-    int fitness;
-    void PruneRec(int v);
-    int Translate(int v);
-    std::vector<bool> Rvector;
+    //tree;map with key a vertice and a list of v2(destination) and weight of every edge that leaves the vertice.
+    std::map<int,std::list < std::pair <int, int> > > T; 
+    std::list <int> verticesIn; //the vertices which are on the tree.
+    std::vector<bool> keys;  
+    int fitness; //weight + Rs not in * 1000
+    int Translate(int v);  //returns the position of the vertice in the key
+    std::vector<bool> Rvector;//says wich vertices are in R
     bool PutEdge(  int v1, int v2 , int w );
-    std::list< std::pair < int,int> > ShuffleList(std::list< std::pair < int,int> > lst);
+    std::list< std::pair < int,int> > ShuffleList(std::list< std::pair < int,int> > lst); 
   
 
 public:
@@ -37,14 +30,11 @@ public:
     int id;
     void PrintTree();
     void ConstructTree(std::vector<bool> keys);
-    void ConstructDeep(std::vector<bool> keys);
-    void DeepRec(int v);
     
     
     bool InT(int v);
     int GetNumbersOfRsIn();
     int GetNumberOfEdgesT();
-    void Prune();
     int GetWeight();
     std::vector<bool> GetKeys(){return keys;}
     void CalculateFitness();

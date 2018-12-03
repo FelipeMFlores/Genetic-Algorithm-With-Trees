@@ -10,11 +10,13 @@ Tree::Tree(int id, Graph graph){
     this->r = graph.Getr();
     this->R = graph.GetR();
     this->nvertices = graph.GetNVertices();
-    this->SizeReference = graph.GetSizeReference();
+    
     Rvector.resize(nvertices+1, false);
     for(int x: R){
         Rvector[x] = true;
     }
+    
+    this->SizeReference = graph.GetSizeReference();
 }
 
 Tree::~Tree()
@@ -36,7 +38,16 @@ void Tree::PrintTree(){
 }
 
 
-
+/******
+Construct the tree based on the keys, 
+start in the root and construct the tree like a Breadth-first search.
+the keys contain a bool, representing if a edge will be tried to put in the tree.
+A edge dont go in the tree if:
+- the key is false
+- points to root
+- points to a vertice already in the tree
+When the edge dont go to the tree, it key turns false.
+******/
 void Tree::ConstructTree(std::vector<bool> keys)
 {
     this->keys = keys;
@@ -47,19 +58,18 @@ void Tree::ConstructTree(std::vector<bool> keys)
 
    
     larg.push_back(r);  
-
     while(!larg.empty()){
         vertice1 = larg.front();
         int i = Translate(vertice1);
         if(i != -1){
-            std::list< std::pair < int,int> > edges = ShuffleList(G[vertice1]);
+            std::list< std::pair < int,int> > edges = ShuffleList(G[vertice1]); //shuffle to not create a bias
             for(auto const& x : edges){
                 if(keys[i++]){
                     if(PutEdge(vertice1,x.first,x.second))
                         larg.push_back(x.first);
                     else
                         this->keys[i-1] = false;
-                    
+              
                 }
 
             }
@@ -78,7 +88,7 @@ std::list< std::pair < int,int> > Tree::ShuffleList(std::list< std::pair < int,i
     std::vector< std::pair < int,int>  > vec( lst.begin(), lst.end() ) ;
 
     // shuffle (the references in) the vector
-    std::shuffle( vec.begin(), vec.end(), std::mt19937{ std::random_device{}() } ) ;
+    std::shuffle( vec.begin(), vec.end(), std::mt19937{ 2018 } ) ;
 
     // copy the shuffled sequence into a new list
     std::list<std::pair < int,int>> shuffled_list {  vec.begin(), vec.end() } ;
@@ -153,40 +163,8 @@ int Tree::GetNumberOfEdgesT(){
 }
 
 
-void Tree::Prune(){
 
 
-    TCopy = T;
-    T.clear();
-    PruneRec(r);
-
-        
-}
-
-void Tree::PruneRec(int v) {
-
-
-        bool exists = true;
-        try
-        {
-            TCopy.at(v);
-        }
-        catch(const std::exception& e)
-        {
-            exists = false;
-        }
-        if(exists){
-        
-        for(std::pair<int,int> x: TCopy.at(v))
-        {
-            T[v].push_back(x);
-            PruneRec(x.first);
-        
-        }
-        }
-
-
-}
 
 int Tree::GetWeight(){
     int w = 0;
@@ -225,28 +203,4 @@ void Tree::CalculateFitness(){
 
 }
 
-void Tree::ConstructDeep(std::vector<bool> keys){
 
-    this->keys = keys;
-    DeepRec(r);
-
-}
-
-
-void Tree::DeepRec(int v) {
-
-
-    int i = Translate(v);
-    if(i != -1){
-        std::list< std::pair < int,int> > edges = ShuffleList(G[v]);        
-        for(auto const& x : edges){
-            if(keys[i++]){
-                if(PutEdge(v,x.first,x.second))
-                    DeepRec(x.first);
-                else
-                    this->keys[i-1] = false;
-                    
-            }
-        }
-    }
-}

@@ -1,19 +1,37 @@
 #include "../include/GeneticAlgorithm.h"
 
-std::random_device rd;
-std::mt19937 rng(rd());
-std::uniform_int_distribution<int> distribution(0,1);
-std::uniform_int_distribution<int> distributionTourn(0,POPSIZE-1);
-std::uniform_real_distribution<float> distributionMut(0,1);
-float RandomInd(){ return distributionTourn(rng);}
-float RandomBool(){ return distribution(rng);}
-float RandomMut(){ return distributionMut(rng);}
+    //RANDOM
+    std::mt19937 rng(2018);
+    std::uniform_int_distribution<int> distribution(0,1);
+    std::uniform_real_distribution<float> distributionMut(0,1); 
+    float RandomBool(){ return distribution(rng);}
+    float RandomMut(){ return distributionMut(rng);}
 
-std::vector< Tree > population(POPSIZE);
+
+//PARAMETERS
+int POPSIZE;  //50;
+int KTOURN; //3;
+float MUTPROB;  //0.01;
+int TIMELIMIT; //7200; //seconds
+
+std::vector< Tree > population;
 int idcont = 1;
 
 
-void GeneticAlgorithm(Graph graph){
+void GeneticAlgorithm(Graph graph, int popsize, int ktourn, float mutprob, int timelimit){
+
+    POPSIZE = popsize;  
+    KTOURN = ktourn; 
+    MUTPROB = mutprob/100;  
+    TIMELIMIT = timelimit; 
+
+    std::uniform_int_distribution<int> distributionTourn(0,POPSIZE-1);
+    population.resize(POPSIZE);
+
+ 
+    time_t timer;
+    time_t timer2;
+    time(&timer);
 
     InitializePopulation(graph);
     
@@ -23,14 +41,14 @@ void GeneticAlgorithm(Graph graph){
     int i = 0;
     int j = 0;
     while(true){
-        std::pair<int,int> parents = SelectForCrossover();
+        std::pair<int,int> parents = SelectForCrossover(distributionTourn);
         std::vector<bool> childKeys = Crossover(parents);
         childKeys = Mutation(childKeys);
         Tree child(idcont++,graph);
         child.ConstructTree(childKeys);
         child.CalculateFitness();
         EnterPopulation(child);
-        if(population[0].GetFitness() < best){std::cout << population[0].GetFitness() << std::endl; best = population[0].GetFitness(); }
+        if(population[0].GetFitness() < best){std::cout << "NEW BEST: " << population[0].GetFitness() << std::endl; best = population[0].GetFitness(); }
         i++;
         if(i > 30000){std::cout << "                                        BEST 10: " 
                     << population[0].GetFitness() << " - " << population[1].GetFitness() << " - "
@@ -41,29 +59,32 @@ void GeneticAlgorithm(Graph graph){
                     << population[10].GetFitness() 
                     << std::endl;i =0; 
                     j++;
-                    if(j > 30){
-                        SaveKeys();
-                        j=0;
+                    time(&timer2);
+                    if(difftime(timer2,timer) > TIMELIMIT){
+                    SaveKeys(graph.getSaveFile());
+                    break;
                     }
+                    
                     }  
-    }
 
+    }
+    std::cout << "Best Result Found: " << population[0].GetFitness() << std::endl;
 
 }
 
-void SaveKeys(){
+void SaveKeys(std::string file){
     
-    std::ofstream myfile ("backupKeys.txt");
+    std::ofstream myfile (file);
  
     if (myfile.is_open())
     {
-        for(int i = 0;i<POPSIZE;i++){
-            std::vector<bool> k = population[i].GetKeys();
-            myfile << "[";
-            for(unsigned x = 0; x < k.size();x++) 
-                        myfile << k[x] << ", ";
-            myfile << "]" << std::endl;
-        }
+       
+        std::vector<bool> k = population[0].GetKeys();
+        myfile << "[";
+        for(unsigned x = 0; x < k.size();x++) 
+                    myfile << k[x] << ", ";
+        myfile << "]" << std::endl;
+        myfile << "Result: " << population[0].GetFitness();
 
         myfile.close();
         std::cout << "                                                                  SAVED\n";
@@ -78,20 +99,13 @@ void InitializePopulation(Graph graph){
     
     std::vector<bool> keys;
     int nedges = graph.GetNumberOfEdges(); 
-    //keys.resize(nedges);
-    /*
+    keys.resize(nedges,true);
+    
     for(int i = 0;i < POPSIZE; i++){
         Tree tree(idcont++ , graph);
-        std::generate (keys.begin(), keys.end(), RandomBool);
         tree.ConstructTree(keys);
         population[i] = tree;
         
-    }*/
-    keys.resize(nedges,true);
-    for(int i = 0;i < POPSIZE; i++){
-        Tree tree(idcont++ , graph);
-        tree.ConstructTree(keys);
-        population[i] = tree;
     }
 
 }
@@ -107,28 +121,26 @@ void Fitness(){
 }
 
 bool compareTrees(Tree t1, Tree t2){
-    if((t1.GetFitness()/1000 == t2.GetFitness()/1000)  && t2.GetFitness()/1000 != 0)
-       return t1.GetFitness() > t2.GetFitness();
     return t1.GetFitness() < t2.GetFitness();
 
 }
 
-std::pair < int, int > SelectForCrossover(){
+std::pair < int, int > SelectForCrossover(std::uniform_int_distribution<int> distribution){
     int first,second;
-    first = Tournament();
-    second = Tournament();
+    first = Tournament(distribution);
+    second = Tournament(distribution);
     while(first == second)
-        second = Tournament();
+        second = Tournament(distribution);
 
     return std::make_pair(first,second);
 }
 
-int Tournament(){
+int Tournament(std::uniform_int_distribution<int> distribution){
     std::vector<bool> selected(POPSIZE,false);
     int i = 0;
     int r;
     while(i <= KTOURN){
-        r = RandomInd();
+        r = distribution(rng);
         if(!selected[r]){
             selected[r] = true;
             i++;
@@ -185,7 +197,6 @@ void  EnterPopulation(Tree child){
     if(population[POPSIZE-1].GetFitness() > child.GetFitness()){
         population.pop_back();
         population.push_back(child);
-        std::cout << "                  " << child.GetFitness() << std::endl;
         std::sort(population.begin(),population.end(), compareTrees);
     }
 }

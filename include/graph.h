@@ -4,34 +4,45 @@
 #include <string>
 #include <algorithm>
 #include <map>
-#include <string>
-#include <fstream>
 
 
 class Graph
 {
 protected:
-    int r;
-    std::list<int> R;
-    std::map<int,std::list < std::pair <int, int> > > G;
-    std::map<int,int > SizeReference;
-    int nvertices;
+    int r;  //root
+    std::list<int> R;  //vertices that must be in the tree
+     //graph;map with key a vertice and a list of v2(destination) and weight of every edge that leaves the vertice.
+    std::map<int,std::list < std::pair <int, int> > > G;  //graph
+    std::map<int,int > SizeReference; //used for calculating th positing in the key of a edge
+    int nvertices; //number of the highest vertice
+    std::string saveFile;
     void createReference();
+
 public:
     Graph();
     Graph(int id);
     ~Graph();
+
     int id;
 
-    void InputGraph(std::string inputFile);
+    void setSaveFile(std::string newFile){saveFile = newFile;}
+
+    std::string getSaveFile(){return saveFile;}
+
+    void InputGraph();
+
     void PrintGraph ();
-    void PrintReference();
+
     int GetNumberOfEdges();
+
     std::list<int> GetR(){return R;}
+
     std::map<int,std::list < std::pair <int, int> > >  GetG(){return G;}
+
     int Getr(){return r;}
     
     int GetNVertices(){return nvertices;}
+
     std::map<int,int > GetSizeReference(){return SizeReference;}
 
 };

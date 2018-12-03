@@ -29,54 +29,45 @@ void Graph::PrintGraph ()
 
 }
 
-void Graph::InputGraph(std::string inputFile)
+void Graph::InputGraph()
 {
-   
+
     std::string strR;
-    std::ifstream myfile (inputFile);
-    if (myfile.is_open())
+    std::getline(std::cin, strR);
+    std::istringstream is( strR );
+    int n;
+    int b = 0;
+    while( is >> n ) {
+        R.push_back(n);
+        b++;
+    }
+
+    r = R.front();
+    R.sort(); 
+
+    int v1,v2,w;
+    std::map<int,std::list < std::pair <int, int> > >::iterator it;
+    while(std::cin >> v1 >> v2 >> w)
     {
-        if( getline (myfile,strR) ){
-            std::istringstream is( strR );
-            int n;
-            while( is >> n ) {
-                R.push_back(n);
-                
-            }
-            r = R.front();
-            R.sort(); 
-        }
-        int v1,v2,w;
-        std::map<int,std::list < std::pair <int, int> > >::iterator it;
-
-        while ( getline (myfile,strR) )
-        {
-            std::istringstream is( strR );
-            is >> v1 >> v2 >> w;
-
             if(v1 > nvertices)
             nvertices = v1;
             if(v2 > nvertices)
-                nvertices = v2;
-
-
-            it = G.find(v1);
-            if (it != G.end())
-                G[v1].push_back(std::make_pair(v2,w));
-            else 
-            {
-                std::list < std::pair <int, int> > novo;
-                novo.push_back(std::make_pair(v2,w));
-                G[v1] = novo; 
-            }
-
-
+            nvertices = v2;
+        
+        it = G.find(v1);
+        if (it != G.end())
+            G[v1].push_back(std::make_pair(v2,w));
+        else 
+        {
+            std::list < std::pair <int, int> > novo;
+            novo.push_back(std::make_pair(v2,w));
+            G[v1] = novo; 
         }
-    myfile.close();
     }
-    createReference();
 
+    createReference();
 }
+
 
 void Graph::createReference(){
 
@@ -85,16 +76,7 @@ void Graph::createReference(){
     }
 
 }
-void Graph::PrintReference(){
-        
-    
-    for( auto const& x :  SizeReference)
-    {
-        std::cout << x.first  << " : " << x.second << std::endl;
-    }
 
-
-}
 
 int Graph::GetNumberOfEdges()
 {
