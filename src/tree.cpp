@@ -46,7 +46,7 @@ A edge dont go in the tree if:
 - the key is false
 - points to root
 - points to a vertice already in the tree
-When the edge dont go to the tree, it key turns false.
+Edges that tried to enter the tree and fail, it key turns false.
 ******/
 void Tree::ConstructTree(std::vector<bool> keys)
 {
@@ -82,9 +82,8 @@ void Tree::ConstructTree(std::vector<bool> keys)
 }
 
 std::list< std::pair < int,int> > Tree::ShuffleList(std::list< std::pair < int,int> > lst){
-    // create a vector of (wrapped) references to elements in the list
-    // http://en.cppreference.com/w/cpp/utility/functional/reference_wrapper
 
+    
     std::vector< std::pair < int,int>  > vec( lst.begin(), lst.end() ) ;
 
     // shuffle (the references in) the vector
@@ -96,6 +95,8 @@ std::list< std::pair < int,int> > Tree::ShuffleList(std::list< std::pair < int,i
     return shuffled_list;
 }
 
+//translate a vertice to the position in the keys 
+//of the edges that leaves it.
 int Tree::Translate(int v){
     int i = 0;
     for(auto const& x : SizeReference){
@@ -109,6 +110,7 @@ int Tree::Translate(int v){
 }
 
 
+//Tries to put  a edge in the, if creates a cycle, dont put and return false.
 bool Tree::PutEdge( int v1, int v2 , int w)
 {
     if(v2 == r) return false; //points to root.
@@ -135,6 +137,7 @@ bool Tree::PutEdge( int v1, int v2 , int w)
     return true;
 }
 
+//searches if a vertice is in the tree.
 bool Tree::InT(int v){
     for(auto const& x : verticesIn){
         if(v < x)
@@ -161,8 +164,6 @@ int Tree::GetNumberOfEdgesT(){
     return i;
 
 }
-
-
 
 
 

@@ -2,12 +2,12 @@ SRC_DIR = ./src
 BIN_DIR = ./bin
 INCLUDE_DIR = ./include
 
-
-all: admv1 admv2 admv3 admv4 admv5 admv6 admv7 admv8 admv9 admv10 
+all: compile
 
 compile: $(SRC_DIR)/main.cpp $(SRC_DIR)/graph.cpp $(SRC_DIR)/tree.cpp $(SRC_DIR)/GeneticAlgorithm.cpp
 	g++ -O2 -o $(BIN_DIR)/main  $^  -std=c++11 -Wall
 
+run: admv1 admv2 admv3 admv4 admv5 admv6 admv7 admv8 admv9 admv10 
 
 admv1:
 	bin/main result01.txt 50 3 1 7200 < admv/admv01

@@ -11,12 +11,14 @@ class Graph
 protected:
     int r;  //root
     std::list<int> R;  //vertices that must be in the tree
+
      //graph;map with key a vertice and a list of v2(destination) and weight of every edge that leaves the vertice.
-    std::map<int,std::list < std::pair <int, int> > > G;  //graph
+    std::map<int,std::list < std::pair <int, int> > > G;
+
     std::map<int,int > SizeReference; //used for calculating th positing in the key of a edge
     int nvertices; //number of the highest vertice
     std::string saveFile;
-    void createReference();
+    void createReference(); //create the SizeReference
 
 public:
     Graph();

@@ -17,7 +17,7 @@ int TIMELIMIT; //7200; //seconds
 std::vector< Tree > population;
 int idcont = 1;
 
-
+//The main method of the heuristic
 void GeneticAlgorithm(Graph graph, int popsize, int ktourn, float mutprob, int timelimit){
 
     POPSIZE = popsize;  
@@ -39,15 +39,21 @@ void GeneticAlgorithm(Graph graph, int popsize, int ktourn, float mutprob, int t
 
     int best = 99999999;
     int i = 0;
-    int j = 0;
     while(true){
         std::pair<int,int> parents = SelectForCrossover(distributionTourn);
+
         std::vector<bool> childKeys = Crossover(parents);
+
         childKeys = Mutation(childKeys);
+
         Tree child(idcont++,graph);
+
         child.ConstructTree(childKeys);
+
         child.CalculateFitness();
+
         EnterPopulation(child);
+
         if(population[0].GetFitness() < best){std::cout << "NEW BEST: " << population[0].GetFitness() << std::endl; best = population[0].GetFitness(); }
         i++;
         if(i > 30000){std::cout << "                                        BEST 10: " 
@@ -58,10 +64,10 @@ void GeneticAlgorithm(Graph graph, int popsize, int ktourn, float mutprob, int t
                     << population[8].GetFitness() << " - " << population[9].GetFitness() << " - "
                     << population[10].GetFitness() 
                     << std::endl;i =0; 
-                    j++;
+
                     time(&timer2);
                     if(difftime(timer2,timer) > TIMELIMIT){
-                    SaveKeys(graph.getSaveFile());
+                    SaveKey(graph.getSaveFile());
                     break;
                     }
                     
@@ -72,7 +78,8 @@ void GeneticAlgorithm(Graph graph, int popsize, int ktourn, float mutprob, int t
 
 }
 
-void SaveKeys(std::string file){
+//Save the best key and your fitness in the file. 
+void SaveKey(std::string file){
     
     std::ofstream myfile (file);
  
@@ -93,7 +100,8 @@ void SaveKeys(std::string file){
         std::cout << "ERRO AO SALVAR KEYS\n";
 }
 
-
+//initializes the population with all keys 1
+//contruct all trees.
 void InitializePopulation(Graph graph){
 
     
@@ -112,6 +120,8 @@ void InitializePopulation(Graph graph){
 
 
 
+//calculate the fitness of all population
+//sort the population by it
 void Fitness(){
     
     for(int i = 0; i<POPSIZE;i++){
@@ -120,11 +130,14 @@ void Fitness(){
     std::sort(population.begin(),population.end(), compareTrees);
 }
 
+//compare which tree has the lowest fitness
 bool compareTrees(Tree t1, Tree t2){
     return t1.GetFitness() < t2.GetFitness();
 
 }
 
+
+//select two parents by the k tournament method
 std::pair < int, int > SelectForCrossover(std::uniform_int_distribution<int> distribution){
     int first,second;
     first = Tournament(distribution);
@@ -192,6 +205,7 @@ std::vector<bool> Mutation(std::vector< bool > keys){
     
 }
 
+//try to put a child in the population.
 void  EnterPopulation(Tree child){
 
     if(population[POPSIZE-1].GetFitness() > child.GetFitness()){

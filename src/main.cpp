@@ -1,6 +1,4 @@
-#include "../include/main.h"
-
-
+#include "../include/GeneticAlgorithm.h"
 
 int main (int argc, char** argv)
 {
@@ -13,13 +11,12 @@ int main (int argc, char** argv)
      * *********/
 
 
-    //take the graph from the stdin       
+    //take the graph from the stdin  
+      
     Graph graph(0);  
     graph.InputGraph();
     std::cout  << std::endl<< std::endl<< std::endl<< std::endl;
     graph.setSaveFile(argv[1]);
-    
-
 
     //run the heuristic
     GeneticAlgorithm(graph, atoi(argv[2]),atoi(argv[3]) ,atoi(argv[4]),atoi(argv[5]) );
